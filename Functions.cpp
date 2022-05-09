@@ -94,6 +94,7 @@ string deleteAssignment() {
 string modifyAssignment() {
 	string nameM;
 	string* nameMP;
+	string oldNameS;
 	string name;
 	string date;
 	string description;
@@ -105,7 +106,7 @@ string modifyAssignment() {
 	cin.ignore();
 	getline(cin, nameM);
 
-
+	oldNameS = nameM;
 	nameM = "./assignments/" + nameM + ".json";
 	nameMP = &nameM;
 
@@ -174,9 +175,21 @@ string modifyAssignment() {
 		modifyData["date"] = date;
 		modifyData["className"] = className;
 
+		name = "./assignments/" + name + ".json";
+
+		char* oldName;
+		oldName = &nameM[0];
+		char* newName;
+		newName = &name[0];
+
 		newFile << modifyData;
 		newFile.close();
+		int result = rename(oldName, newName);
+		if (result != 0) {
+			return "Err2";
+		}
 		return "Done";
+
 
 	}
 	else {
