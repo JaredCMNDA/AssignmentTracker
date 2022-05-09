@@ -3,4 +3,4 @@ This is the repo for a simple tracker that allowed me to learn the implementatio
 
 
 
-This is also the first release branch for this project. I don't really know why you're here, but hey, go ahead and look at the project and make challenge yourself to understand my terrible level of thinking!
+This is also the first release branch for this project. I don't really know why you're here, but hey, go ahead and look at the project and challenge yourself to understand my terrible level of thinking!
