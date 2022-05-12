@@ -17,15 +17,28 @@ void mainScreen() {
 	cout << "Project Created April 26, 2022" << endl;
 	cout << endl << "Choose one of the following:" << endl;
 	cout << "1. Create a new assignment" << endl << "2. Delete an existing assignment" << endl << "3. Modify an existing assignment" << endl;
+	cout << "4. List assignments" << endl;
 
 
 	cin >> choice;
 
 	if (choice == 1) {
 		returnValue = newAssignment();
-		cout << "Your assignment has been added: " << returnValue << endl;
-		this_thread::sleep_for(std::chrono::seconds(2));
-		mainScreen();
+		if (returnValue == "CharLimit") {
+			cout << "Your assignment could not be created: Char limit is 50." << endl;
+			this_thread::sleep_for(std::chrono::seconds(2));
+			mainScreen();
+		}
+		else if (returnValue == "fileType") {
+			cout << "Your assignment could not be created: Illegal file name." << endl;
+			this_thread::sleep_for(std::chrono::seconds(2));
+			mainScreen();
+		}
+		else {
+			cout << "Your assignment has been added: " << returnValue << endl;
+			this_thread::sleep_for(std::chrono::seconds(2));
+			mainScreen();
+		}
 	}
 	else if (choice == 2) {
 		returnValue = deleteAssignment();
@@ -70,7 +83,20 @@ void mainScreen() {
 
 		mainScreen();
 	}
-	else if (choice >= 4 || choice <= 1) {
+	else if (choice == 4) {
+		returnValue = listAssignments();
+		if (returnValue == "Err1") {
+			cout << "Assignments could not be listed: Assignments not found, filepath err." << endl;
+			this_thread::sleep_for(std::chrono::seconds(2));
+			mainScreen();
+		}
+		else {
+			cout << "Assignments listed. Refreshing in 10 seconds..." << endl;
+			this_thread::sleep_for(std::chrono::seconds(10));
+			mainScreen();
+		}
+	}
+	else if (choice >= 5 || choice <= 1) {
 		cout << endl << "Err -> This number does not define a choice" << endl;
 		cout << "Returning in three seconds" << endl;
 		this_thread::sleep_for(std::chrono::seconds(3));
