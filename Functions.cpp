@@ -1,13 +1,17 @@
+#include <Windows.h>
+
 #include "./Functions.h"
 #include <iostream>
 #include <fstream> // File stream
+#include <filesystem>
 #include "nlohmann/json.hpp"
 #include <string>
-#include <Windows.h>
 #include <stdio.h>
 
 using namespace std;
 using namespace::nlohmann;
+std::byte;
+
 
 
 string name;
@@ -34,6 +38,10 @@ string newAssignment() {
 	getline(cin, date);
 	cout << "Description:" << endl;
 	getline(cin, description);
+
+	if (name.length() > 51) {
+		return "CharLimit";
+	}
 
 	datanew["name"] = name;
 	datanew["className"] = className;
@@ -122,13 +130,6 @@ string modifyAssignment() {
 		description = modifyData.at("description");
 		className = modifyData.at("className");
 
-
-		cout << "Initialized" << endl;
-		cout << name << endl;
-		cout << date << endl;
-		cout << className << endl;
-		cout << description << endl;
-
 		// After initialization, close the file so we can re-open it with truncate.
 		myFile.close();
 	}
@@ -169,7 +170,6 @@ string modifyAssignment() {
 			return "Cancel";
 		}
 
-
 		modifyData["name"] = name;
 		modifyData["description"] = description;
 		modifyData["date"] = date;
@@ -182,6 +182,8 @@ string modifyAssignment() {
 		char* newName;
 		newName = &name[0];
 
+		// 0X85391530 -> &name[0] *note [0] is spot 0 in an array that does not exist, so it is just the entire string that occupies [0]
+
 		newFile << modifyData;
 		newFile.close();
 		int result = rename(oldName, newName);
@@ -190,10 +192,58 @@ string modifyAssignment() {
 		}
 		return "Done";
 
-
 	}
 	else {
 		return "Err1";
 	}
+
+}
+
+string listAssignments() {
+	string filePath;
+	char const* fileName;
+	char const* ptrToJson;
+	string ptrToJsonString;
+	char sectionDivider = '-'; // 1 byte
+	
+
+
+	// Filesystem path
+	std::filesystem::path assignments{ "assignments" };
+
+
+	// I = directory_iterator, which will iterate through all the files. Stop the loop after it is not equal to the directory_iterator (meaning it does not exist)
+	// which indicates that there are no more files to be iterated through. i++ to advance to the next file in the directory_iterator.
+
+	for (int i = 0; i != 48; i++) {
+		cout << sectionDivider;
+		if (i == 23) {
+			cout << "ASSIGNMENTS";
+		}
+	}
+	cout << endl; 
+
+	for (auto i = std::filesystem::directory_iterator(assignments); i != std::filesystem::directory_iterator(); i++) {
+		if (!is_directory(i->path())) {
+			filePath = i->path().filename().string(); // i->path() references a specific member inside of the path which is "./assignments". In this case, i references a file inside the path
+
+			fileName = filePath.c_str(); // Convert filePath string to fileName const char ptr
+			ptrToJson = strchr(fileName, '.'); // intialize ptrToJson that will point to the location of the '.' and everything after
+
+			filePath.erase(ptrToJson - fileName);
+			cout << filePath << endl;
+
+		}
+	}
+
+	for (int i = 0; i != 48; i++) {
+		cout << sectionDivider;
+		if (i == 23) {
+			cout << "ASSIGNMENTS";
+		}
+	}
+	cout << endl;
+
+	return "true"; // Return anything other than the keywords to indicate that the operation was successful ( i am lazy )
 
 }

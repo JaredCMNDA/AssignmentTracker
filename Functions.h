@@ -10,3 +10,4 @@ using namespace std;
 string newAssignment();
 string deleteAssignment();
 string modifyAssignment();
+string listAssignments();
