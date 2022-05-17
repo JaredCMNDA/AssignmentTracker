@@ -6,6 +6,7 @@
 #include <filesystem>
 #include "nlohmann/json.hpp"
 #include <string>
+#include <vector>
 #include <stdio.h>
 
 using namespace std;
@@ -60,6 +61,7 @@ string deleteAssignment() {
 	string nameD;
 	string* nameDP;
 	char choice;
+	json datadelete; // Make variable global to the scope of this function so that I can use dataDelete in try{}
 
 	cout << "Please enter the name of the file that you want to delete" << endl;
 
@@ -72,7 +74,16 @@ string deleteAssignment() {
 	ifstream myFile;
 	myFile.open(nameD);
 	if (myFile.is_open()) {
-		json datadelete = json::parse(myFile);
+		try {
+			datadelete = json::parse(myFile);
+		}
+		catch (json::exception) {
+			nameDP = &nameD;
+			cout << "Corrupted Assignment, or parse error. Deleting file." << endl;
+			myFile.close();
+			remove(nameDP->c_str());
+			return(nameD);
+		}
 		cout << endl << "Is this the correct assignment? (Y | N):" << endl;
 		cout << "Name: " << datadelete.at("name") << endl;
 		cout << "Class: " << datadelete.at("className") << endl;
@@ -121,8 +132,12 @@ string modifyAssignment() {
 	ifstream myFile;
 	myFile.open(nameM);
 	if (myFile.is_open()) {
-		modifyData = json::parse(myFile);
-
+		try {
+			modifyData = json::parse(myFile);
+		}
+		catch (json::exception) {
+			return "Err2";
+		}
 
 
 		name = modifyData.at("name");
@@ -203,8 +218,12 @@ string listAssignments() {
 	string filePath;
 	char const* fileName;
 	char const* ptrToJson;
+	string pathForVector;
 	string ptrToJsonString;
 	char sectionDivider = '-'; // 1 byte
+	string dueDate;
+	json parseFile;
+	std::vector<string> f = {};
 	
 
 
@@ -229,11 +248,38 @@ string listAssignments() {
 
 			fileName = filePath.c_str(); // Convert filePath string to fileName const char ptr
 			ptrToJson = strchr(fileName, '.'); // intialize ptrToJson that will point to the location of the '.' and everything after
-
+			pathForVector = filePath;
 			filePath.erase(ptrToJson - fileName);
-			cout << filePath << endl;
+			ifstream File;
+			File.open("./assignments/"+pathForVector);
+			if (File.is_open()) {
+				try { // Try catch block and detect any exception that is caught when trying to parse the iterator file
+					parseFile = json::parse(File, nullptr, false);
+					dueDate = parseFile.at("date");
+				}
+				catch (json::exception) {
+					cout << pathForVector << " could not be parsed. Delete this file using the delete function." << endl;
+					return "Err2";
+				}
+
+				for (int i = 0; i != 50; i++) {
+					if (filePath.size() != 50) {
+						filePath = filePath + " ";
+					}
+				}
+
+				f.push_back(filePath + dueDate);
+				
+
+			}
+			else {
+				return "Err1";
+			}
 
 		}
+	}
+	for (int i = 0; i != f.size(); i++) {
+		cout << f[i] << endl;
 	}
 
 	for (int i = 0; i != 48; i++) {
