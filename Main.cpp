@@ -66,7 +66,7 @@ void mainScreen() {
 			mainScreen();
 		}
 		else if (returnValue == "Err2") {
-			cout << "Your assignment could not be modified: Unexpected error" << endl;
+			cout << "Your assignment could not be modified: Unexpected error, or file corrupted." << endl;
 			this_thread::sleep_for(std::chrono::seconds(2));
 			mainScreen();
 		}
@@ -87,6 +87,11 @@ void mainScreen() {
 		returnValue = listAssignments();
 		if (returnValue == "Err1") {
 			cout << "Assignments could not be listed: Assignments not found, filepath err." << endl;
+			this_thread::sleep_for(std::chrono::seconds(2));
+			mainScreen();
+		}
+		else if (returnValue == "Err2") {
+			cout << "Assignments could not be listed: Assignment was corrupted." << endl;
 			this_thread::sleep_for(std::chrono::seconds(2));
 			mainScreen();
 		}
